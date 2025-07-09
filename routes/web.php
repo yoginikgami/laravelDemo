@@ -26,9 +26,9 @@ Route::get('dashoard', function () {
 });
 
 
-// Route::get('assignSubject', function () {
-//     return view('./admin/subject/assignSubject');
-// });
+Route::get('assignSubject', function () {
+    return view('./admin/subject/assignSubject');
+});
 
 // Route::get('assignclass', function () {
 //     return view('./admin/class/assignClassStd');
