@@ -13,7 +13,8 @@ class SubjectController extends Controller
      */
     public function index()
     {
-
+        $subjcts = Subject::with(['schoolClass', 'teacher'])->get();
+        return view("./admin/subjects/viewassignSub", compact("subjcts"));
     }
 
     /**
@@ -25,10 +26,6 @@ class SubjectController extends Controller
         return view('./admin/subjects/assignSubject', compact('classes'));
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
 

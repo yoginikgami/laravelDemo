@@ -25,20 +25,11 @@ Route::get('dashoard', function () {
     return view('./admin/dashboard');
 });
 
-
-Route::get('assignSubject', function () {
-    return view('./admin/subject/assignSubject');
-});
-
-// Route::get('assignclass', function () {
-//     return view('./admin/class/assignClassStd');
-// });
-
-
 Route::resource('/user', UserController::class);
 Route::resource('teacher', TeacherController::class);
 Route::resource('student', StudentController::class);
 Route::resource('schoolClass', SchoolClassController::class);
+Route::resource('subject', SubjectController::class);
 
 Route::controller(TeacherController::class)->prefix('teachers')->name('teacher.')->group(function () {
 
@@ -70,3 +61,12 @@ Route::controller(SchoolClassController::class)->prefix('schoolClasses')->name('
 
 Route::get('/teachers-by-subject', [TeacherController::class, 'getBySubject'])->name('teachers.by.subject');
 
+
+Route::controller(SubjectController::class)->prefix('subjects')->name('subject.')->group(function () {
+
+    Route::get('/create', 'create')->name('create');
+    Route::post('/store', 'store')->name('store');
+    Route::get('/{id}/edit', 'edit')->name('edit');
+    Route::put('/{id}', 'update')->name('update');
+
+});
