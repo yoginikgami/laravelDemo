@@ -50,6 +50,7 @@ class StudentController extends Controller
             "email"=> "required|email|unique:users,email",
             "password"=> "required",
             'class_id' => 'required|exists:school_classes,id',
+
             "roll_no" => "required",
             "gender"=> "required",
             "dob"=> "required|date",
@@ -62,6 +63,7 @@ class StudentController extends Controller
             'name' => $validation['fname'],
             'email' => $validation['email'],
             'password'=> Hash::make($validation['password']),
+            'role'=> 'Student',
         ]);
 
         $photoPath = null;

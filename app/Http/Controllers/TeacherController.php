@@ -43,6 +43,7 @@ class TeacherController extends Controller
             'name' => $validation['fname'],
             'email' => $validation['email'],
             'password'=> Hash::make($validation['password']),
+            'role'=> 'Teacher',
         ]);
 
         $photoPath = null;

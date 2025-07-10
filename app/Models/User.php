@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class User extends Model
+class User extends Authenticatable
 {
-    use Notifiable, TwoFactorAuthenticatable, HasFactory;
-    protected $fillable = ['name', 'email', 'password'];
+    use Notifiable, HasFactory;
+    protected $fillable = ['name', 'email', 'password', 'role'];
 
     protected $hidden = ['password', 'remember_token'];
 

@@ -26,12 +26,12 @@
                                     class="ms-1 d-none d-sm-inline">Dashboard</span> </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link px-0 align-middle">
+                            <a href="{{ route('schoolClass.index')}}" class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Class</span></a>
                         </li>
 
                         <li>
-                            <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle ">
+                            <a href="{{ route('subject.index')}}" data-bs-toggle="collapse" class="nav-link px-0 align-middle ">
                                 <i class="fs-4 bi-bootstrap"></i> <span
                                     class="ms-1 d-none d-sm-inline">Subject</span></a>
                         </li>

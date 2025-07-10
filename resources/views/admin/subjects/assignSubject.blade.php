@@ -18,7 +18,8 @@
             <a href="javascript:history.back()" class="btn btn-dark fw-bold">Back</a>
         </div>
         <h1 style="text-align: center;" class="mt-3 mb-3">Assign Subject </h1>
-        <form method="POST" action="" class="mb-3" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('subject.store') }}">
+
     @csrf
 
     {{-- Select Subject --}}
@@ -41,9 +42,9 @@
         <label for="class_id" class="form-label">Class</label>
         <select name="class_id" class="form-select" required>
             <option value="">Select Class</option>
-            {{--  @foreach ($classes as $class)
+            @foreach ($classes as $class)
                 <option value="{{ $class->id }}">{{ $class->name }} {{ $class->section }}</option>
-            @endforeach  --}}
+            @endforeach
         </select>
     </div>
 

@@ -1,52 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login From</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-</head>
-<body>
-    @include('components.navbar')
-    <div class="container">
-        <div class="card m-5 " style="width: 25rem;">
-            <div class="card-header fw-bold fs-1">
-                Login
-            </div>
-            <div class="card-body">
+<x-guest-layout>
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4" :status="session('status')" />
 
-                <form action="" method="GET">
-                    @csrf
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
 
-                    <div class="mb-3 mt-3">
-                        <label for="email" class="form-label"> Email Address</label>
-                        <input type="text"
-                            class="form-control @error('email') is-invalid @enderror" name="email" />
-                    </div>
-                    <div class="mb-3 mt-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password"
-                            class="form-control @error('password') is-invalid @enderror" name="password" />
-                    </div>
-
-                    <button class="btn btn-primary " value="submit">Submit</button>
-                    <a href="#" class="btn btn-success w-10">Register</a>
-                </form>
-                @if ($errors->any())
-                  <div class="card-footer text-body-secondary">
-                    <div class="alert alert-danger">
-                      <ul>
-                        @foreach ($errors->all() as $error)
-                          <li></li>
-                        @endforeach
-                      </ul>
-                    </div>
-                  </div>
-                @endif
-            </div>
-
+        <!-- Email Address -->
+        <div>
+            <x-input-label for="email" :value="__('Email')" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
-    </div>
-</body>
-</html>
+
+        <!-- Password -->
+        <div class="mt-4">
+            <x-input-label for="password" :value="__('Password')" />
+
+            <x-text-input id="password" class="block mt-1 w-full"
+                            type="password"
+                            name="password"
+                            required autocomplete="current-password" />
+
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        </div>
+
+        <!-- Remember Me -->
+        <div class="block mt-4">
+            <label for="remember_me" class="inline-flex items-center">
+                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
+                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+            </label>
+        </div>
+
+        <div class="flex items-center justify-end mt-4">
+            @if (Route::has('password.request'))
+                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+                    {{ __('Forgot your password?') }}
+                </a>
+            @endif
+
+            <x-primary-button class="ms-3">
+                {{ __('Log in') }}
+            </x-primary-button>
+        </div>
+    </form>
+</x-guest-layout>

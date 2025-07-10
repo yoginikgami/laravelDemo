@@ -21,41 +21,43 @@
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
                         id="menu">
                         <li>
-                            <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
+                            <a href="{{ route('admin.dashboard') }}" data-bs-toggle="collapse"
+                                class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-speedometer2"></i> <span
                                     class="ms-1 d-none d-sm-inline">Dashboard</span> </a>
                         </li>
                         <li>
-                            <a href="{{ route('teacher.index')}}" class="nav-link px-0 align-middle">
+                            <a href="{{ route('teacher.index') }}" class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Teacher</span></a>
                         </li>
                         <li>
-                            <a href="{{ route('student.index')}}" data-bs-toggle="collapse" class="nav-link px-0 align-middle ">
+                            <a href="{{ route('student.index') }}" data-bs-toggle="collapse"
+                                class="nav-link px-0 align-middle ">
                                 <i class="fs-4 bi-bootstrap"></i> <span
                                     class="ms-1 d-none d-sm-inline">Student</span></a>
                         </li>
                         <li>
-                            <a href="{{ route('schoolClass.index')}}" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
+                            <a href="{{ route('schoolClass.index') }}" data-bs-toggle="collapse"
+                                class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Class </span> </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link px-0 align-middle">
+                            <a href="{{ route('subject.index') }}" class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline">Subject</span> </a>
                         </li>
 
-                         <li>
+                        <li>
                             <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle ">
                                 <i class="fs-4 bi-bootstrap"></i> <span
                                     class="ms-1 d-none d-sm-inline">Attendance</span></a>
                         </li>
-                        <li>
+                        {{--  <li>
                             <a href="#submenu3" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Profile </span> </a>
-                        </li>
+                        </li>  --}}
                     </ul>
 
                 </div>
             </div>
 </body>
-
 </html>

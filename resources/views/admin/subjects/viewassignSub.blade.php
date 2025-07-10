@@ -13,7 +13,7 @@
 
     <div class="container card mt-3 mb-5" style="width:80%">
         <h1 style="text-align: center;" class="mt-3 mb-3"> Assign Subject List</h1>
-        <a href="" class="btn btn-success mt-4 mb-3 fw-bold" style="width:15%">Add Subject</a>
+        <a href="{{ route('subject.create')}}" class="btn btn-success mt-4 mb-3 fw-bold" style="width:15%">Add Subject</a>
         <table class="table table-striped table-bordered" style="width: 100%">
             <tr>
                 <th>Subject Name</th>
