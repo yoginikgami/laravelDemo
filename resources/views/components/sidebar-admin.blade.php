@@ -20,6 +20,7 @@
 
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
                         id="menu">
+
                         <li>
                             <a href="{{ route('admin.dashboard') }}" data-bs-toggle="collapse"
                                 class="nav-link px-0 align-middle">

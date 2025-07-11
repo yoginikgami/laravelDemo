@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Subject;
-use App\Models\SchoolClass;
 use App\Models\Teacher;
+use App\Models\SchoolClass;
 use Illuminate\Http\Request;
 
 class SubjectController extends Controller
@@ -23,8 +24,7 @@ class SubjectController extends Controller
      */
     public function create()
     {
-        $classes = SchoolClass::all(); // use your actual model
-    //return view('your-view-name', compact('classes'));
+        $classes = SchoolClass::all();
         return view('./admin/subjects/assignSubject', compact('classes'));
     }
 
@@ -36,6 +36,15 @@ class SubjectController extends Controller
             'class_id' => 'required|exists:school_classes,id',
             'teacher_id' => 'required|exists:teachers,id',
         ]);
+        $exists = Subject::where('name', $request->subject)
+            ->where('class_id', $request->class_id)
+            ->exists();
+
+        if ($exists) {
+            return back()->withErrors([
+                'duplicate' => 'This class is already assigned this subject.'
+            ])->withInput();
+        }
 
         Subject::create([
             'name' => $request->subject,
@@ -63,8 +72,12 @@ class SubjectController extends Controller
     {
         $subject = Subject::findOrFail($id);
         $classes = SchoolClass::all();
-        return view('./admin/subjects/editassignSub', compact('subject','classes'));
+
+        $teachers = Teacher::where('subject', 'REGEXP', "(^|, )" . preg_quote($subject->name) . "(,|$)")->get();
+
+        return view('./admin/subjects/editassignSub', compact('subject', 'classes', 'teachers'));
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -73,26 +86,27 @@ class SubjectController extends Controller
     {
         $subject = Subject::findOrFail($id);
         $request->validate([
-            'name'=> 'required',
-            'class_id' =>'required',
+            'name' => 'required',         // This is your subject
+            'class_id' => 'required',
             'teacher_id' => 'required'
         ]);
 
         $exists = Subject::where('name', $request->name)
-            // ->where('section', $request->section)
-            // ->where('id', '!=', $id)
+            ->where('id', '!=', $id)
             ->exists();
 
         if ($exists) {
             return back()->withErrors([
-                'duplicate' => "The class '{$request->name} - {$request->section}' already exists."
+                'duplicate' => 'This class is already assigned this subject.'
             ])->withInput();
         }
         $subject->update([
-            'name'=> $request->name,
-            'section'=> $request->section
+            'name' => $request->name,
+            'class_id' => $request->class_id,
+            'teacher_id' => $request->teacher_id
         ]);
-        return redirect()->route('subject.index')->with('success','Subject Updated Successfully.');
+
+        return redirect()->route('subject.index')->with('success', 'Subject updated successfully.');
     }
 
     /**
@@ -102,6 +116,6 @@ class SubjectController extends Controller
     {
         $subject = Subject::findOrFail($id);
         $subject->delete();
-         return redirect()->route('subject.index')->with('success', 'Subject deleted successfully.');
+        return redirect()->route('subject.index')->with('success', 'Subject deleted successfully.');
     }
 }

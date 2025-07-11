@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Teacher;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\SchoolClass;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class AdminDashboardController extends Controller
 {
@@ -18,12 +20,30 @@ class AdminDashboardController extends Controller
         $recentStudents = Student::latest()->take(5)->get();
         $recentTeachers = Teacher::latest()->take(5)->get();
 
+
+        $user = Auth::user();
+
+        $teacher = $user->teacher;
+
+        if (!$teacher) {
+            abort(404, 'Teacher profile not found.');
+        }
+
+        $studentCountsByClass = DB::table('students')
+                ->select('school_classes.name', 'school_classes.section', DB::raw('COUNT(students.id) as student_count'))
+                ->join('school_classes', 'students.class_id', '=', 'school_classes.id')
+                ->groupBy('school_classes.name', 'school_classes.section')
+                ->orderBy('school_classes.name')
+                ->get();
+
         return view('admin.dashboard.admin', compact(
             'totalTeachers',
             'totalStudents',
             'totalClasses',
             'recentStudents',
-            'recentTeachers'
+            'recentTeachers',
+            'teacher',
+            'studentCountsByClass'
         ));
     }
 }
