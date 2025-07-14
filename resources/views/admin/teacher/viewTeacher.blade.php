@@ -9,7 +9,7 @@
 
 </head>
 <body>
-    @include('./components/sidebar-admin')
+    @include('./components/side-bar')
 
     <div class="container card mt-3 mb-5" style="width:80%">
         <h1 style="text-align: center;" class="mt-3 mb-3"> Teacher Details</h1>

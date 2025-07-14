@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    @include('./components/sidebar-admin')
+    @include('./components/side-bar')
 
     <div class="container card mt-3 mb-5" style="width:40%; height: 50%;">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">

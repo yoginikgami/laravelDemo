@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    @include('./components/sidebar-student')
+    @include('./components/side-bar')
     <div class="container mt-4" style="width:80%; align-items: center;">
             <div class="col-3 card ">
                 <h3 class="mt-3" style="text-align: center">Profile</h3>

@@ -1,4 +1,7 @@
+
 <section>
+    <x-primary-button class="mb-5"><a href="javascript:history.back()">Back</a></x-primary-button>
+
     <header>
         <h2 class="text-lg font-medium text-gray-900">
             {{ __('Profile Information') }}
@@ -8,6 +11,7 @@
             {{ __("Update your account's profile information and email address.") }}
         </p>
     </header>
+
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf

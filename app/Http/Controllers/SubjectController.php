@@ -7,6 +7,7 @@ use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\SchoolClass;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SubjectController extends Controller
 {
@@ -86,14 +87,27 @@ class SubjectController extends Controller
     {
         $subject = Subject::findOrFail($id);
         $request->validate([
-            'name' => 'required',         // This is your subject
+            // 'name' => 'required',         // This is your subject
             'class_id' => 'required',
             'teacher_id' => 'required'
         ]);
 
-        $exists = Subject::where('name', $request->name)
-            ->where('id', '!=', $id)
-            ->exists();
+        // $exists = Subject::where('name', $request->name)
+        //     ->where('id', '!=', $id)
+        //     ->exists();
+
+        $exists = DB::table('subjects')
+    ->join('school_classes', 'subjects.class_id', '=', 'school_classes.id')
+    ->where('subjects.name', $request->name)
+    ->where('school_classes.name', function($query) use ($request) {
+        $query->select('name')->from('school_classes')->where('id', $request->class_id);
+    })
+    ->where('school_classes.section', function($query) use ($request) {
+        $query->select('section')->from('school_classes')->where('id', $request->class_id);
+    })
+    ->where('subjects.id', '!=', $id)
+    ->exists();
+
 
         if ($exists) {
             return back()->withErrors([

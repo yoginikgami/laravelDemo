@@ -12,8 +12,11 @@
 </head>
 
 <body>
-    @include('./components/sidebar-student')
+    @include('./components/side-bar')
     <div class="container mt-4" style="width:80%">
+        @php
+            $user = Auth::user();
+        @endphp
         <div class="row">
             <div class="col-3 card ">
                 <h3 class="mt-3" style="text-align: center">Profile</h3>
@@ -75,7 +78,7 @@
                             <button type="submit" class="btn btn-primary fw-bold">Update Info</button>
                         </div>
                     </form>
-                     @if (session('success'))
+                    @if (session('success'))
                         <div class="alert alert-success text-center">{{ session('success') }}</div>
                     @endif
                 @else
@@ -102,9 +105,9 @@
                         </ul>
                     </div>
                 </div>
-                <div class="raw card">
+                {{--  <div class="raw card">
                     <h3 class="m-3" style="text-align: center">Attendances</h3>
-                </div>
+                </div>  --}}
             </div>
         </div>
     </div>

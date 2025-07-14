@@ -26,34 +26,13 @@
                                     class="ms-1 d-none d-sm-inline">Dashboard</span> </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Class</span></a>
-                        </li>
-                        <li>
-                            <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle ">
+                            <a href="{{ route('student.index') }}" data-bs-toggle="collapse"
+                                class="nav-link px-0 align-middle ">
                                 <i class="fs-4 bi-bootstrap"></i> <span
                                     class="ms-1 d-none d-sm-inline">Student</span></a>
                         </li>
-                        <li>
-                            <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle ">
-                                <i class="fs-4 bi-bootstrap"></i> <span
-                                    class="ms-1 d-none d-sm-inline">Subject</span></a>
-                        </li>
-                        <li>
-                            <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle ">
-                                <i class="fs-4 bi-bootstrap"></i> <span
-                                    class="ms-1 d-none d-sm-inline">Attendance</span></a>
-                        </li>
-                        <li>
-                            <a href="#submenu3" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Profile </span> </a>
-                        </li>
-
                     </ul>
-
                 </div>
             </div>
-        </div>
-    </div>
 </body>
 </html>
