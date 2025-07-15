@@ -2,12 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use GuzzleHttp\Promise\Create;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class RoleSeeder extends Seeder
 {
@@ -16,30 +13,47 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-
-        // $admin = Role::create(["name" => "Admin"]);
-        // $teacher = Role::create(["name" => "Teacher"]);
-        // $student = Role::create(["name" => "Student"]);
-
-        // $admin = Role::findByName('Admin');
-        // $admin->givePermissionTo(Permission::all());
-
-        // $teacher = Role::findByName('Teacher');
-        // $teacher->givePermissionTo(['view dashboard']);
-
-        // $student = Role::findByName('Student');
-        // $student->givePermissionTo(['view dashboard']);
-
-        $permission = Permission::firstOrCreate([
+        // Create permissions
+        $viewDashboard = Permission::firstOrCreate([
             'name' => 'view dashboard',
-            'guard_name' => 'web' // Make sure the guard is set
+            'guard_name' => 'web'
         ]);
 
-        $role = Role::firstOrCreate([
+        $manageTeacher = Permission::firstOrCreate([
+            'name' => 'manage teacher',
+            'guard_name' => 'web'
+        ]);
+
+        $manageStudent = Permission::firstOrCreate([
+            'name'=> 'manage student',
+            'guard_name'=> 'web'
+        ]);
+        // $viewDashboardAdmin = Permission::firstOrCreate([
+        //     'name' => 'view admin.dashboard.admin',
+        //     'guard_name' => 'web'
+        // ]);
+
+
+        // Create roles
+        $adminRole = Role::firstOrCreate([
             'name' => 'Admin',
             'guard_name' => 'web'
         ]);
 
-        $role->givePermissionTo('view dashboard');
-    }
+        $teacherRole = Role::firstOrCreate([
+            'name' => 'Teacher',
+            'guard_name' => 'web'
+        ]);
+
+        $studentRole = Role::firstOrCreate([
+            'name'=> 'Student',
+            'guard_name'=> 'web'
+        ]);
+
+
+        $adminRole->givePermissionTo(Permission::all());
+        $teacherRole->givePermissionTo([$viewDashboard, $manageStudent]);
+        $studentRole->givePermissionTo([$viewDashboard]);
+
+}
 }

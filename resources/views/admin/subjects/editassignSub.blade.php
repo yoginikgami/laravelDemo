@@ -1,19 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Edit Subject</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-
-</head>
-
-<body>
-    @include('./components/side-bar')
+@section('content')
 
     <div class="container card mt-3 mb-5" style="width:40%; height: 50%;">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
@@ -68,6 +55,4 @@
         </form>
 
     </div>
-</body>
-
-</html>
+@endsection

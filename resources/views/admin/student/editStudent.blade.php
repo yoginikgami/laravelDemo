@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Add Student</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-    @include('./components/side-bar')
+@extends('layouts.app')
 
-    <div class="container card mt-3 mb-5" style="width:40%; height: 80%;">
+@section('content')
+
+
+    <div class="container card mt-3 mb-5" style="width:50%; ">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
             <a href="javascript:history.back()" class="btn btn-dark fw-bold">Back</a>
         </div>
@@ -62,9 +54,6 @@
             <div class="">
                 <label for="gender" class="form-label">Gender</label>
             </div>
-            <div class="">
-                <label for="gender" class="form-label">Gender</label>
-            </div>
             <div class="mb-3">
                 <input type="radio" class="form-check-input" name="gender" value="Male"
                     {{ old('gender', $student->gender) == 'Male' ? 'checked' : '' }}>
@@ -100,8 +89,7 @@
             </div>
         </form>
     </div>
-</body>
-</html>
+@endsection
 <script>
     $(document).ready(function () {
         $('select[name="class_id"]').change(function () {

@@ -14,19 +14,24 @@ class StudentDashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
+         if (!$user->hasRole('Student') || !$user->can('view dashboard')) {
+        abort(403, 'Unauthorized access to Student dashboard');
+    }
 
         $student = $user->student;
 
-        if (!$student) {
-            abort(404, 'Student profile not found.');
-        }
+
+        // if (!$student) {
+        //     abort(404, 'Student not found.');
+        // }
 
         $subjects = Subject::with('teacher')
             ->where('class_id', $student->class_id)
             ->get();
-
+        //dd($student);
         return view('admin.dashboard.student', compact('student', 'subjects'));
     }
+
 
     public function updatePhoto(Request $request, string $id)
     {

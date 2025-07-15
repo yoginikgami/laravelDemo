@@ -16,6 +16,10 @@ class TeacherDashboardController extends Controller
     {
         $user = Auth::user();
 
+    if (!$user->hasRole('Teacher') || !$user->can('view dashboard')) {
+        abort(403, 'Unauthorized access to teacher dashboard');
+    }
+
         $teacher = $user->teacher;
         $teacher = Teacher::where('user_id', $user->id)->first();
 

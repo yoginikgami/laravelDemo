@@ -13,11 +13,9 @@ class TeacherController extends Controller
 
     public function index()
     {
-        $teachers = Teacher::with('user')->get();
+        $teachers = Teacher::with('user')->paginate(5);
         return view('./admin/teacher/viewTeacher', compact('teachers'));
     }
-
-
 
     public function create()
     {
@@ -28,37 +26,37 @@ class TeacherController extends Controller
     public function store(Request $request)
     {
         $validation = $request->validate([
-            "fname"=> "required",
-            "email"=> "required|email|unique:users,email",
-            "password"=> "required",
-            "qualification"=> "required|string",
+            "fname" => "required",
+            "email" => "required|email|unique:users,email",
+            "password" => "required",
+            "qualification" => "required|string",
             "subjects" => "required|array",
-            "phoneno"=> "required|unique:teachers,phone|max:10",
-            "address"=> "required|string",
-            "photo"=> "required|image|mimes:jpg,jpeg,png|max:2048",
-            "joined_date"=> "required|date",
+            "phoneno" => "required|unique:teachers,phone|max:10",
+            "address" => "required|string",
+            "photo" => "required|image|mimes:jpg,jpeg,png|max:2048",
+            "joined_date" => "required|date",
         ]);
 
         $user = User::create([
             'name' => $validation['fname'],
             'email' => $validation['email'],
-            'password'=> Hash::make($validation['password']),
-            'role'=> 'Teacher',
+            'password' => Hash::make($validation['password']),
+            // 'role'=> 'Teacher',
         ]);
-
+        $user->assignRole('Teacher');
         $photoPath = null;
-        if($request->hasFile('photo')){
-            $photoPath = $request->file('photo')->store('teacher_photos','public');
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('teacher_photos', 'public');
         }
 
         Teacher::create([
-            'user_id'=> $user->id,
-            'qualification'=>$validation['qualification'],
-            'subject'=> implode(', ', $validation['subjects']),
-            'phone'=> $validation['phoneno'],
-            'address'=> $validation['address'],
-            'profile_photo'=> $photoPath,
-            'joined_date'=> $validation['joined_date'],
+            'user_id' => $user->id,
+            'qualification' => $validation['qualification'],
+            'subject' => implode(', ', $validation['subjects']),
+            'phone' => $validation['phoneno'],
+            'address' => $validation['address'],
+            'profile_photo' => $photoPath,
+            'joined_date' => $validation['joined_date'],
             [
                 'email.unique'    => 'This email is already registered.',
                 'phoneno.unique'  => 'Phone number already exists.',
@@ -68,10 +66,7 @@ class TeacherController extends Controller
     }
 
 
-    public function show(string $id)
-    {
-
-    }
+    public function show(string $id) {}
 
 
     public function edit(string $id)
@@ -101,7 +96,7 @@ class TeacherController extends Controller
 
         $photoPath = $teacher->profile_photo;
 
-        if( $request->hasFile("photo") ){
+        if ($request->hasFile("photo")) {
             if ($teacher->profile_photo && Storage::disk('public')->exists($teacher->profile_photo)) {
                 Storage::disk('public')->delete($teacher->profile_photo);
             }
@@ -143,18 +138,43 @@ class TeacherController extends Controller
     }
 
 
+    // public function getBySubject(Request $request)
+    // {
+    //     $subject = $request->get('subject');
+
+    //     $teachers = Teacher::where('subject', 'LIKE', '%' . $subject . '%')
+    //         ->with('user')
+    //         ->get();
+
+    //     if ($teachers->isEmpty()) {
+    //         return response()->json([], 200); // return empty array safely
+    //     }
+
+    //     return response()->json($teachers->map(function ($teacher) {
+    //         return [
+    //             'id' => $teacher->id,
+    //             'name' => $teacher->user->name,
+    //         ];
+    //     }));
+    // }
+
     public function getBySubject(Request $request)
-    {
-        $subject = $request->get('subject');
+{
+    $subject = $request->get('subject');
 
-        $teachers = Teacher::where('subject', 'LIKE', '%' . $subject . '%')->with('user')->get();
+    $teachers = Teacher::where('subject', 'LIKE', '%' . $subject . '%')
+        ->with('user')
+        ->get();
 
-        return response()->json($teachers->map(function ($teacher) {
-            return [
-                'id' => $teacher->id,
-                'name' => $teacher->user->name,
-            ];
-        }));
-    }
+    return response()->json($teachers->map(function ($teacher) {
+        return [
+            'id' => $teacher->id,
+            'name' => $teacher->user->name,
+        ];
+    }));
+}
 
 }
+
+
+

@@ -11,9 +11,12 @@
 
 <body>
 
-    @php
+    {{--  @php
         $role = Auth::user();
-    @endphp
+        dd($role);
+    @endphp  --}}
+    {{--  <p>Role: {{ Auth::user()->getRoleNames()->implode(', ') }}</p>  --}}
+    @include('components.navbar')
 
     <div class="container-fluid">
         <div class="row flex-nowrap">
@@ -53,6 +56,8 @@
                     </ul>
                     @endrole
                     @role('Teacher')
+
+
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
                         id="menu">
                         <li>
@@ -60,19 +65,21 @@
                                 <i class="fs-4 bi-speedometer2"></i> <span
                                     class="ms-1 d-none d-sm-inline">Dashboard</span> </a>
                         </li>
-
+                        @can('manage student')
                         <li>
                             <a href="{{ route('student.index') }}" data-bs-toggle="collapse"
                                 class="nav-link px-0 align-middle ">
                                 <i class="fs-4 bi-bootstrap"></i> <span
                                     class="ms-1 d-none d-sm-inline">Student</span></a>
                         </li>
+                        @endcan
 
                     </ul>
                     @endrole
                     @role('Student')
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
                         id="menu">
+
                         <li>
                             <a href="{{ route('admin.studentDashboard') }}" data-bs-toggle="collapse"
                                 class="nav-link px-0 align-middle">
@@ -81,7 +88,7 @@
                         </li>
                     </ul>
                     @endrole
-                   <p>Current Role: {{ Auth::user()->role }}</p>
+
                 </div>
             </div>
 </body>

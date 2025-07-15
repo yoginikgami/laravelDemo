@@ -63,14 +63,16 @@ class StudentController extends Controller
             'name' => $validation['fname'],
             'email' => $validation['email'],
             'password'=> Hash::make($validation['password']),
-            'role'=> 'Student',
+            // 'role'=> 'Student',
         ]);
 
         $photoPath = null;
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('student_photos', 'public');
         }
+        $user->assignRole('Student');
 
+        // $user->assignRole('Teacher');
         Student::create([
             'user_id'=> $user->id,
             'class_id' => $validation['class_id'],

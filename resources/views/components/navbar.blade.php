@@ -17,12 +17,7 @@
             <a class="navbar-brand fw-bold fs-3" href="#">School Management</a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    {{--  <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">🏠</a>
-                    </li>  --}}
-                    {{--  <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>  --}}
+
                     <li class="nav-item">
 
                         <form method="POST" action="{{ route('logout') }}">
@@ -36,11 +31,11 @@
                             </x-dropdown-link>
                         </form>
                     </li>
-                    <li>
+                    {{--  <li>
                         <x-dropdown-link :href="route('profile.edit')" class="nav-link ">
                             {{ __('Profile') }}
                         </x-dropdown-link>
-                    </li>
+                    </li>  --}}
             </div>
 
     </nav>

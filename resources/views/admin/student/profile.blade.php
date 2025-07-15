@@ -1,18 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-/home/wrteam/schoolMan/resources/views/admin/student/profile.blade.php
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+@extends('layouts.app')
 
-</head>
+@section('content')
 
-<body>
-    @include('./components/side-bar')
     <div class="container mt-4" style="width:80%; align-items: center;">
             <div class="col-3 card ">
                 <h3 class="mt-3" style="text-align: center">Profile</h3>
@@ -58,8 +47,7 @@
                 @endif
             </div>
     </div>
-</body>
-</html>
+@endsection
 <script>
     function previewImage(event) {
         const file = event.target.files[0];

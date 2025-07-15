@@ -53,7 +53,7 @@ class SchoolClassController extends Controller
             ]);
         }
 
-        return redirect()->route('schoolClass.index')->with('success','Classes added Successfully.');
+        return redirect()->route('schoolclass.index')->with('success','Classes added Successfully.');
     }
 
     /**
@@ -99,7 +99,7 @@ class SchoolClassController extends Controller
             'name'=> $request->name,
             'section'=> $request->section
         ]);
-        return redirect()->route('schoolClass.index')->with('success','Class Updated Successfully.');
+        return redirect()->route('schoolclass.index')->with('success','Class Updated Successfully.');
     }
 
     /**
@@ -109,6 +109,6 @@ class SchoolClassController extends Controller
     {
         $schoolClass = SchoolClass::findOrFail($id);
         $schoolClass->delete();
-         return redirect()->route('schoolClass.index')->with('success', 'Class deleted successfully.');
+         return redirect()->route('schoolclass.index')->with('success', 'Class deleted successfully.');
     }
 }

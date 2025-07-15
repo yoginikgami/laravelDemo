@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Teacher Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+@section('content')
 
-<body>
-    @include('components.side-bar')
-    <div class="container mt-4" style="width: 80%">
+
+    <div class="container mt-4" style="width: 100%">
         <h5 class="card-title"> 👩‍🏫 Welcome, {{ $user->name }}</h5>
         <div class="row">
             <div class="col-3 card m-3">
@@ -49,7 +43,7 @@
                             @disabled(true) />
                     </div>
 
-                    <form method="POST" action="{{ route('dashboardupdate', $teacher->id) }}">
+                    <form method="POST" action="">
                         @csrf
                         @method('PUT')
                         <div class="mb-3 mt-3">
@@ -148,7 +142,7 @@
     </div>
 </body>
 
-</html>
+@endsection
 <script>
     function previewImage(event) {
         const file = event.target.files[0];

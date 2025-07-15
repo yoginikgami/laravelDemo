@@ -1,22 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Edit class</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<@extends('layouts.app')
 
-</head>
-<body>
-    @include('./components/side-bar')
+@section('content')
 
-    <div class="container card mt-3 mb-5" style="width:40%; height: 30%;">
+    <div class="container card mt-3 mb-5" style="width:40%; ">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
             <a href="javascript:history.back()" class="btn btn-dark fw-bold">Back</a>
         </div>
         <h1 style="text-align:center;" class="mt-3 mb-3">Edit Class</h1>
-        <form method="post" action="{{ route('schoolClass.update',$schoolClass->id)}}" class="mb-3" enctype="multipart/form-data">
+        <form method="post" action="{{ route('schoolclass.update',$schoolClass->id)}}" class="mb-3" enctype="multipart/form-data">
             @csrf
             @method('PUT')
            @if ($errors->has('duplicate'))
@@ -57,5 +48,4 @@
             </div>
         </form>
     </div>
-</body>
-</html>
+@endsection

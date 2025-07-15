@@ -15,13 +15,14 @@
     <!-- Optional: Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
 
+    <link href="https://cdn.jsdelivr.net/npm/@coreui/coreui-pro@5.15.0/dist/css/coreui.min.css" rel="stylesheet">
+
+
     <!-- Your Custom Styles (if any) -->
     @stack('styles')
 </head>
 <body class="bg-light">
 
-    {{-- Navigation --}}
-    @include('components.navbar')
 
     <div class="container-fluid">
         <div class="row">
@@ -39,8 +40,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-bmbxuPwQa2lc/FvnE3vrJbKc7E+Kp3rNZo8h+gka9Ykkt0Zt2GYSkH/WeI5z9jvK"
         crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/@coreui/coreui-pro@5.15.0/dist/js/coreui.bundle.min.js"></script>
 
-    <!-- Your Custom Scripts (if any) -->
     @stack('scripts')
 </body>
 </html>

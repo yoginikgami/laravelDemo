@@ -29,32 +29,67 @@ class SubjectController extends Controller
         return view('./admin/subjects/assignSubject', compact('classes'));
     }
 
-    public function store(Request $request)
-    {
+    // public function store(Request $request)
+    // {
 
-        $request->validate([
-            'subject' => 'required|string',
-            'class_id' => 'required|exists:school_classes,id',
-            'teacher_id' => 'required|exists:teachers,id',
-        ]);
-        $exists = Subject::where('name', $request->subject)
-            ->where('class_id', $request->class_id)
+    //     $request->validate([
+    //         'subject' => 'required|string',
+    //         'class_id' => 'required|exists:school_classes,id',
+    //         'teacher_id' => 'required|exists:teachers,id',
+    //     ]);
+    //     $exists = Subject::where('name', $request->subject)
+    //         ->where('class_id', $request->class_id)
+    //         ->exists();
+
+    //     if ($exists) {
+    //         return back()->withErrors([
+    //             'duplicate' => 'This class is already assigned this subject.'
+    //         ])->withInput();
+    //     }
+
+    //     Subject::create([
+    //         'name' => $request->subject,
+    //         'class_id' => $request->class_id,
+    //         'teacher_id' => $request->teacher_id,
+    //     ]);
+
+    //     return redirect()->route('subject.index')->with('success', 'Subject assigned successfully.');
+    // }
+
+    public function store(Request $request)
+{
+    $request->validate([
+        'subject' => 'required|string',
+        'class_id' => 'required|array',
+        'class_id.*' => 'exists:school_classes,id',
+        'teacher_id' => 'required|exists:teachers,id',
+    ]);
+
+    $subjectName = $request->subject;
+    $teacherId = $request->teacher_id;
+    $classIds = $request->class_id;
+
+    foreach ($classIds as $classId) {
+        $exists = Subject::where('name', $subjectName)
+            ->where('class_id', $classId)
             ->exists();
 
         if ($exists) {
+            // Optional: continue instead of returning error for one class
             return back()->withErrors([
-                'duplicate' => 'This class is already assigned this subject.'
+                'duplicate' => "Subject '$subjectName' is already assigned to class ID $classId."
             ])->withInput();
         }
 
         Subject::create([
-            'name' => $request->subject,
-            'class_id' => $request->class_id,
-            'teacher_id' => $request->teacher_id,
+            'name' => $subjectName,
+            'class_id' => $classId,
+            'teacher_id' => $teacherId,
         ]);
-
-        return redirect()->route('subject.index')->with('success', 'Subject assigned successfully.');
     }
+
+    return redirect()->route('subject.index')->with('success', 'Subject assigned to selected classes.');
+}
 
 
 
