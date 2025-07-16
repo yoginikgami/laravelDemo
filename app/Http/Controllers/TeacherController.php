@@ -13,7 +13,7 @@ class TeacherController extends Controller
 
     public function index()
     {
-        $teachers = Teacher::with('user')->paginate(5);
+        $teachers = Teacher::with('user')->get();
         return view('./admin/teacher/viewTeacher', compact('teachers'));
     }
 
@@ -72,9 +72,13 @@ class TeacherController extends Controller
     public function edit(string $id)
     {
         $teacher = Teacher::findOrFail($id);
-        return view('./admin/teacher/editTeacher', compact('teacher'));
-    }
 
+        if(request()->ajax()){
+            return view('admin.teacher.editfrom', compact('teacher'))->render();
+        }
+       return view('./admin/teacher/editTeacher', compact('teacher'));
+
+    }
 
     public function update(Request $request, string $id)
     {
@@ -137,26 +141,6 @@ class TeacherController extends Controller
         return redirect()->route('teacher.index')->with('success', 'Teacher deleted successfully.');
     }
 
-
-    // public function getBySubject(Request $request)
-    // {
-    //     $subject = $request->get('subject');
-
-    //     $teachers = Teacher::where('subject', 'LIKE', '%' . $subject . '%')
-    //         ->with('user')
-    //         ->get();
-
-    //     if ($teachers->isEmpty()) {
-    //         return response()->json([], 200); // return empty array safely
-    //     }
-
-    //     return response()->json($teachers->map(function ($teacher) {
-    //         return [
-    //             'id' => $teacher->id,
-    //             'name' => $teacher->user->name,
-    //         ];
-    //     }));
-    // }
 
     public function getBySubject(Request $request)
 {

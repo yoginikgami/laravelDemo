@@ -1,8 +1,5 @@
-@extends('layouts.app')
 
-@section('content')
-
-    <div class="container card mt-3 mb-5" style="width:40%">
+    <div class="container card mt-3 mb-5" style="width:60%">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
             <a href="javascript:history.back()" class="btn btn-dark fw-bold">Back</a>
         </div>
@@ -76,4 +73,19 @@
                 </div>
             @endif
     </div>
-@endsection
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endpush
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.subject-multiselect').select2({
+                placeholder: "Select subjects",
+                width: '100%',
+                allowClear: true
+            });
+        });
+    </script>
+@endpush
