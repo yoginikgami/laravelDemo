@@ -28,11 +28,16 @@ class RoleSeeder extends Seeder
             'name'=> 'manage student',
             'guard_name'=> 'web'
         ]);
-        // $viewDashboardAdmin = Permission::firstOrCreate([
-        //     'name' => 'view admin.dashboard.admin',
-        //     'guard_name' => 'web'
-        // ]);
 
+        $manageClass = Permission::firstOrCreate([
+            'name'=> 'manage school class',
+            'guard_name'=> 'web'
+        ]);
+
+        $manageSubject = Permission::firstOrCreate([
+            'name'=> 'manage subject',
+            'guard_name'=> 'web'
+        ]);
 
         // Create roles
         $adminRole = Role::firstOrCreate([

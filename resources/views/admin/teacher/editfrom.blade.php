@@ -1,3 +1,6 @@
+{{--  @extends('layouts.app')
+
+@section('content')  --}}
 <form method="POST" action="{{ route('teacher.update', $teacher->id) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
@@ -55,6 +58,7 @@
         <button type="submit" class="btn btn-primary">Update</button>
     </div>
 </form>
+{{--  @endsection  --}}
 
 @push('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />

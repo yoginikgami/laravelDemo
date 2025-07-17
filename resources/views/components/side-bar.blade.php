@@ -10,11 +10,6 @@
 </head>
 
 <body>
-
-    {{--  @php
-        $role = Auth::user();
-        dd($role);
-    @endphp  --}}
     {{--  <p>Role: {{ Auth::user()->getRoleNames()->implode(', ') }}</p>  --}}
     @include('components.navbar')
 
@@ -28,25 +23,20 @@
                         id="menu">
 
                         <li>
-                            <a href="{{ route('admin.admindashboard')}}" data-bs-toggle="collapse"
-                            class="nav-link px-0 align-middle">
-                            <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span>
-                            </a>
+                            <a href="{{ route('admin.admindashboard') }}" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span></a>
                         </li>
                         <li>
                             <a href="{{ route('teacher.index') }}" class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Teacher</span></a>
                         </li>
-                        <li>
-                            <a href="{{ route('student.index') }}" data-bs-toggle="collapse"
-                                class="nav-link px-0 align-middle ">
-                                <i class="fs-4 bi-bootstrap"></i> <span
-                                    class="ms-1 d-none d-sm-inline">Student</span></a>
+                             <li>
+                            <a href="{{ route('student.index') }}" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Student</span></a>
                         </li>
-                        <li>
-                            <a href="{{ route('schoolclass.index') }}" data-bs-toggle="collapse"
-                                class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Class </span> </a>
+                             <li>
+                            <a href="{{ route('schoolclass.index') }}" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Class</span></a>
                         </li>
                         <li>
                             <a href="{{ route('subject.index') }}" class="nav-link px-0 align-middle">
@@ -56,35 +46,27 @@
                     </ul>
                     @endrole
                     @role('Teacher')
-
-
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
                         id="menu">
                         <li>
-                            <a href="{{ route('admin.teacherdashboard')}}" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-speedometer2"></i> <span
-                                    class="ms-1 d-none d-sm-inline">Dashboard</span> </a>
+                            <a href="{{ route('admin.teacherdashboard') }}" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span></a>
                         </li>
                         @can('manage student')
-                        <li>
-                            <a href="{{ route('student.index') }}" data-bs-toggle="collapse"
-                                class="nav-link px-0 align-middle ">
-                                <i class="fs-4 bi-bootstrap"></i> <span
-                                    class="ms-1 d-none d-sm-inline">Student</span></a>
+                        </li>
+                             <li>
+                            <a href="{{ route('student.index') }}" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Student</span></a>
                         </li>
                         @endcan
-
                     </ul>
                     @endrole
                     @role('Student')
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
                         id="menu">
-
                         <li>
-                            <a href="{{ route('admin.studentDashboard') }}" data-bs-toggle="collapse"
-                                class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-speedometer2"></i> <span
-                                    class="ms-1 d-none d-sm-inline">Dashboard</span> </a>
+                            <a href="{{ route('admin.studentDashboard') }}" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span></a>
                         </li>
                     </ul>
                     @endrole

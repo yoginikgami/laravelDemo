@@ -18,7 +18,7 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = Student::with('user')->paginate(5);
+        $students = Student::with('user')->get();
         return view('./admin/student/viewStudent', compact('students'));
 
     }
@@ -45,7 +45,7 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        $validation = $request->validate([
+        $validation = Validator::make($request->all(), [
             "fname"=> "required",
             "email"=> "required|email|unique:users,email",
             "password"=> "required",
@@ -59,10 +59,18 @@ class StudentController extends Controller
             "contact_no"=> "required|unique:teachers,phone|max:10",
         ]);
 
+        if ($validation->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Error',
+                'errors' => $validation->errors(),
+            ], 422);
+        }
+
         $user = User::create([
-            'name' => $validation['fname'],
-            'email' => $validation['email'],
-            'password'=> Hash::make($validation['password']),
+            'name' => $request['fname'],
+            'email' => $request['email'],
+            'password'=> Hash::make($request['password']),
             // 'role'=> 'Student',
         ]);
 
@@ -73,24 +81,57 @@ class StudentController extends Controller
         $user->assignRole('Student');
 
         // $user->assignRole('Teacher');
-        Student::create([
+        $student = Student::create([
             'user_id'=> $user->id,
-            'class_id' => $validation['class_id'],
-            'roll_no' => $validation['roll_no'],
-            'gender'=> $validation['gender'],
-            'dob'=> $validation['dob'],
+            'class_id' => $request['class_id'],
+            'roll_no' => $request['roll_no'],
+            'gender'=> $request['gender'],
+            'dob'=> $request['dob'],
             'photo'=> $photoPath,
-            'address' => $validation['address'],
-            'contact_no'=> $validation['contact_no'],
+            'address' => $request['address'],
+            'contact_no'=> $request['contact_no'],
         ]);
-        return redirect()->route('student.index')->with('success', 'Student added successfully!');
+        return response()->json([
+            'status'=> true,
+            'message'=> 'Student Create Successfully.',
+            'data' => $student->load('user'),
+        ]);
+        //return redirect()->route('student.index')->with('success', 'Student added successfully!');
     }
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
+        $student = Student::with(['user', 'schoolClass'])->find($id);
 
+        if(!$student){
+            return response()->json([
+                'status' => false,
+                'message' => 'Student not found.',
+            ], 404);
+        }
+
+        return response()->json([
+            'status'=> true,
+            'message'=> 'Student fetched successfully.',
+            'data' => [
+                'id' => $student->id,
+                'name' => $student->user->name,
+                'email' => $student->user->email,
+                'class' => [
+                    'id' => $student->schoolClass->id ?? null,
+                    'name' => $student->schoolClass->name ?? null,
+                    'section' => $student->schoolClass->section ?? null,
+                ],
+                'roll_no' => $student->roll_no,
+                'gender' => $student->gender,
+                'dob' => $student->dob,
+                'contact_no' => $student->contact_no,
+                'address' => $student->address,
+                'photo' => $student->photo ? asset('storage/' . $student->photo) : null,
+            ]
+        ]);
     }
 
     /**
@@ -112,7 +153,7 @@ class StudentController extends Controller
         $student = Student::with('user')->findOrFail($id);
         $user = $student->user;
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             "fname" => "required",
             'class_id' => 'required|exists:school_classes,id',
             "roll_no" => "required",
@@ -123,6 +164,14 @@ class StudentController extends Controller
             "contact_no"=> "required|unique:teachers,phone|max:10|min:10",
 
         ]);
+
+        if($validator->fails() ){
+            return response()->json([
+                "status"=> false,
+                "message"=> "Validation Error",
+                "errors"=> $validator->errors(),
+            ],422);
+        }
 
         $user->name = $request->fname;
         $user->save();
@@ -149,7 +198,13 @@ class StudentController extends Controller
             'address' => $request->address,
             'contact_no'=> $request->contact_no,
         ]);
-        return redirect()->route('student.index')->with('success', 'Student Updated Successfully');
+
+        return response()->json([
+            'status'=> true,
+            'message'=> 'Student Updated Successfully',
+            'data' => $student->load('user'),
+        ]);
+        //return redirect()->route('student.index')->with('success', 'Student Updated Successfully');
     }
 
     /**
@@ -167,7 +222,42 @@ class StudentController extends Controller
 
         $student->delete();
 
-        return redirect()->route('student.index')->with('success', 'Student deleted successfully.');
+        return response()->json([
+            'status' => true,
+            'message' => 'Student deleted successfully.',
+        ]);
+
+        //return redirect()->route('student.index')->with('success', 'Student deleted successfully.');
 
     }
+    public function list()
+    {
+        $student = Student::with('user')->get();
+
+        $data = $student->map(function ($student) {
+            return [
+                'id' => $student->id,
+                'name' => $student->user->name,
+                'email' => $student->user->email,
+                'class' => [
+                    'id' => $student->schoolClass->id ?? null,
+                    'name' => $student->schoolClass->name ?? null,
+                    'section' => $student->schoolClass->section ?? null,
+                ],
+                'roll_no' => $student->roll_no,
+                'gender' => $student->gender,
+                'dob' => $student->dob,
+                'contact_no' => $student->contact_no,
+                'address' => $student->address,
+                'photo' => $student->photo ? asset('storage/' . $student->photo) : null,
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Student list fetched successfully.',
+            'data' => $data,
+        ]);
+    }
+
 }

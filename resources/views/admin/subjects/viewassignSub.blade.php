@@ -5,16 +5,20 @@
     <div class="container card mt-3 mb-5" style="width:100%">
         <h1 style="text-align: center;" class="mt-3 mb-3"> Assign Subject List</h1>
         <a href="{{ route('subject.create')}}" class="btn btn-success mt-4 mb-3 fw-bold" style="width:15%">Add Subject</a>
-        <table class="table table-striped table-bordered" style="width: 100%">
+         <table id="subjectTable" class="table table-striped table-bordered m-2" data-toggle="table" data-search="true"
+        data-pagination="true" data-page-size="10" data-page-list="[10, 25, 50, 100, All]" data-sortable="true"
+        data-show-columns="true" data-show-export="true" data-show-print = "true" style="width: 100%">
+        <thead class="table-dark">
             <tr>
-                <th>Subject Name</th>
-                <th>Class & Section</th>
-                <th>Teacher Name</th>
-                <th>Qualification</th>
-                <th>Profile Photo</th>
+                <th data-field="name" data-sortable="true">Subject Name</th>
+                <th data-field="class_section" data-sortable="true">Class & Section</th>
+                <th data-field="name" data-sortable="true">Teacher Name</th>
+                <th data-field="qualification" data-sortable="true">Qualification</th>
+                <th data-field="profile_photo">Profile Photo</th>
                 <th>View</th>
                 <th>Delete</th>
             </tr>
+        </thead>
             @foreach ($subjcts as $subject)
             <tr>
                 <td>{{$subject->name}}</td>

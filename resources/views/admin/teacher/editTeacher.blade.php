@@ -1,9 +1,11 @@
+@extends('layouts.app')
 
+@section('content')
     <div class="container card mt-3 mb-5" style="width:60%">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
             <a href="javascript:history.back()" class="btn btn-dark fw-bold">Back</a>
         </div>
-        <h1 style="text-align: center;" class="mt-3 mb-3">Edit Teacher Details</h1>
+        <h1 style="text-align: center; background-color: white;" class="mt-3 mb-3">Edit Teacher Details</h1>
         <form method="POST" action="{{ route('teacher.update', $teacher->id) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
@@ -73,7 +75,8 @@
                 </div>
             @endif
     </div>
-@push('styles')
+@endsection
+{{--  @push('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endpush
 
@@ -88,4 +91,4 @@
             });
         });
     </script>
-@endpush
+@endpush  --}}

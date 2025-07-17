@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SchoolClass;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SchoolClassController extends Controller
 {
@@ -29,10 +30,18 @@ class SchoolClassController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validation = Validator::make($request->all(), [
             "name"=> "required|array",
             "section"=> "required|array",
         ]);
+
+        if($validation->fails()){
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Error',
+                'errors' => $validation->errors(),
+            ], 422);
+        }
 
         $names = $request->name;
         $sections = $request->section;
@@ -47,13 +56,18 @@ class SchoolClassController extends Controller
                     'duplicate' => "The class '$name - $section' already exists.",
                 ])->withInput();
             }
-            SchoolClass::create([
+            $class = SchoolClass::create([
                 'name'=> $name,
                 'section'=> $section
             ]);
         }
+        return response()->json([
+            'status' => true,
+            'message' => 'Classes added Successfully.',
+            'data' => $class,
+        ]);
 
-        return redirect()->route('schoolclass.index')->with('success','Classes added Successfully.');
+       // return redirect()->route('schoolclass.index')->with('success','Classes added Successfully.');
     }
 
     /**
@@ -61,7 +75,17 @@ class SchoolClassController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $schoolClass = SchoolClass::findOrFail($id); // will throw 404 if not found
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Class fetched successfully.',
+            'data' => [
+                'id' => $schoolClass->id,
+                'name' => $schoolClass->name,
+                'section' => $schoolClass->section,
+            ]
+        ]);
     }
 
     /**
@@ -80,10 +104,18 @@ class SchoolClassController extends Controller
     public function update(Request $request, string $id)
     {
         $schoolClass = SchoolClass::findOrFail($id);
-        $request->validate([
+        $validator = Validator::make($request->all(),[
             'name'=> 'required',
             'section' =>'required'
         ]);
+
+        if($validator->fails()){
+            return response()->json([
+                "status" =>false,
+                "message" => "Validation Error",
+                "errors" => $validator->errors(),
+            ],422);
+        }
 
         $exists = SchoolClass::where('name', $request->name)
             ->where('section', $request->section)
@@ -99,7 +131,13 @@ class SchoolClassController extends Controller
             'name'=> $request->name,
             'section'=> $request->section
         ]);
-        return redirect()->route('schoolclass.index')->with('success','Class Updated Successfully.');
+
+        return response()->json([
+            'status'=>true,
+            'message'=> 'Class Updated Successfully',
+            'data' => $schoolClass,
+        ]);
+        //return redirect()->route('schoolclass.index')->with('success','Class Updated Successfully.');
     }
 
     /**
@@ -109,6 +147,37 @@ class SchoolClassController extends Controller
     {
         $schoolClass = SchoolClass::findOrFail($id);
         $schoolClass->delete();
-         return redirect()->route('schoolclass.index')->with('success', 'Class deleted successfully.');
+        
+        // if(!$schoolClass) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => 'Class not found.',
+        //     ], 404);
+        // }
+        // if($id->wantsJson()){
+            return response()->json([
+                'status' => true,
+                'message' => 'Class deleted successfully.',
+            ]);
+        // }
+
+        // return redirect()->route('schoolclass.index')->with('success', 'Class deleted successfully.');
+    }
+
+    public function list(){
+        $schoolClass = SchoolClass::get();
+        $data = $schoolClass->map(function ($schoolClass) {
+            return [
+                'id' => $schoolClass->id,
+                'name' => $schoolClass->name,
+                'section' => $schoolClass->section,
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Classes fetched successfully.',
+            'data' => $data,
+        ]);
     }
 }

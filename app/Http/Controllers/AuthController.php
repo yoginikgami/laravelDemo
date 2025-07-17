@@ -60,7 +60,7 @@ class AuthController extends Controller
                 'status' => true,
                 'message' => 'User Login Successfully',
                 'token' => $authUser->createToken('api Token')->plainTextToken,
-                'token_type' => 'bearer'
+                'token_type' => 'bearer',
             ], 200);
         }
         else{

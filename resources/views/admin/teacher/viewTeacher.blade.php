@@ -1,7 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-    <table id="teacherTable" class="table table-striped table-bordered" data-toggle="table" data-search="true"
+<div class="card m-2 " ">
+
+
+
+<a href="{{ route('teacher.create') }}" class="btn btn-success fw-bold m-3" style="width:15%">Add
+            Teacher</a>
+    <table id="teacherTable" class="table table-striped table-bordered m-2" data-toggle="table" data-search="true"
         data-pagination="true" data-page-size="10" data-page-list="[10, 25, 50, 100, All]" data-sortable="true"
         data-show-columns="true" data-show-export="true" data-show-print = "true" style="width: 100%">
         <thead class="table-dark">
@@ -36,8 +42,9 @@
                     </td>
                     <td>{{ \Carbon\Carbon::parse($teacher->joined_date)->format('d/m/Y') }}</td>
 
-                    <td><button class="btn btn-success fw-bold edit-btn" data-id="{{ $teacher->id }}">Edit</button>
-                    </td>
+                    <td><a href="{{ route('teacher.edit', $teacher->id) }}" class="btn btn-success fw-bold">Edit</a>
+
+                    {{--  <td><button class="btn btn-success fw-bold edit-btn" data-id="{{ $teacher->id }}">Edit</button>  </td>  --}}
                     <td>
                         <form action="{{ route('teacher.destroy', $teacher->id) }}" method="POST"
                             onsubmit="return confirm('Are you sure you want to delete this teacher?');">
@@ -50,6 +57,7 @@
             @endforeach
         </tbody>
     </table>
+    </div>
 @endsection
 @push('scripts')
     <script>
@@ -78,17 +86,18 @@
             });
         });
     </script>
-@endpush
+@endpush  
 
-<div class="modal fade" id="editTeacherModal" tabindex="-1" aria-labelledby="editTeacherModalLabel" aria-hidden="true">
+{{-- Modal for editing teacher --}}
+{{--  <div class="modal fade" id="editTeacherModal" tabindex="-1" aria-labelledby="editTeacherModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
 
         <div class="modal-header">
             <h5 class="modal-title">Edit Teacher</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" id="editTeacherContent">
+        <div class="modal-body" id="editTeacherContent" style="background-color: white;">
 
         </div>
     </div>
-</div>
+</div>  --}}
