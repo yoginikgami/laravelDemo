@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -26,7 +27,14 @@ class TeacherController extends Controller
 
     public function store(Request $request)
     {
-        // $validation = $request->validate([
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
+
         $validation = Validator::make($request->all(), [
             "fname" => "required",
             "email" => "required|email|unique:users,email",
@@ -72,17 +80,27 @@ class TeacherController extends Controller
                 'phoneno.unique'  => 'Phone number already exists.',
             ]
         ]);
-
-        return response()->json([
-            'status'=> true,
-            'message'=> 'Teacher created successfully',
-            'data' => $teacher->load('user'),
-        ]);
-        //return redirect()->route('teacher.index')->with('success', 'Teacher added successfully!');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status'=> true,
+                'message'=> 'Teacher created successfully',
+                'data' => $teacher->load('user'),
+            ]);
+        } else {
+            return redirect()->route('teacher.index')->with('success', 'Teacher added successfully!');
+        }
     }
 
 
-    public function show(string $id) {
+    public function show(string $id, Request $request)
+    {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $teacher = Teacher::with('user')->findOrFail($id);
 
         if (!$teacher) {
@@ -91,23 +109,26 @@ class TeacherController extends Controller
                 'message'=> 'Teacher not found',
            ],404);
         }
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status'=> true,
+                'message'=> 'Teacher details fetched successfully',
+                'data' => [
+                    'id' => $teacher->id,
+                    'name' => $teacher->user->name,
+                    'email' => $teacher->user->email,
+                    'qualification' => $teacher->qualification,
+                    'subject' => explode(', ', $teacher->subject),
+                    'phone' => $teacher->phone,
+                    'address' => $teacher->address,
+                    'profile_photo' => $teacher->profile_photo ? asset('storage/' . $teacher->profile_photo) : null,
+                    'joined_date' => $teacher->joined_date,
+                ],
+                ]);
+        }else{
+            return view('./admin/teacher/viewTeacher', compact('teacher'));
+        }
 
-        return response()->json([
-            'status'=> true,
-            'message'=> 'Teacher details fetched successfully',
-            'data' => [
-                'id' => $teacher->id,
-                'name' => $teacher->user->name,
-                'email' => $teacher->user->email,
-                'qualification' => $teacher->qualification,
-                'subject' => explode(', ', $teacher->subject),
-                'phone' => $teacher->phone,
-                'address' => $teacher->address,
-                'profile_photo' => $teacher->profile_photo ? asset('storage/' . $teacher->profile_photo) : null,
-                'joined_date' => $teacher->joined_date,
-            ],
-            ]);
-        //return view('./admin/teacher/viewTeacher', compact('teacher'));
     }
 
 
@@ -124,6 +145,13 @@ class TeacherController extends Controller
 
     public function update(Request $request, $id)
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $teacher = Teacher::with('user')->find($id);
 
         if (!$teacher) {
@@ -169,17 +197,25 @@ class TeacherController extends Controller
             'profile_photo' => $photoPath,
             'joined_date' => $request->joined_date,
         ]);
-
-        return response()->json([
-            "status" => true,
-            "message" => "Teacher updated successfully",
-            "data" => $teacher->load('user'),
-        ]);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Teacher updated successfully',
+                'data' => $teacher->load('user'),
+            ]);
+        }
+        return redirect()->route('teacher.index')->with('success', 'Teacher updated successfully');
     }
 
-// return redirect()->route('teacher.index')->with('success', 'Teacher Updated Successfully');
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ],403);
+        }
         $teacher = Teacher::findOrFail($id);
 
         if ($teacher->profile_photo && Storage::disk('public')->exists($teacher->profile_photo)) {
@@ -189,31 +225,23 @@ class TeacherController extends Controller
         $teacher->user()->delete();
 
         $teacher->delete();
-        return response()->json([
-            'status'=> true,
-            'message'=> 'Teacher deleted successfully.',
-        ]);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Teacher deleted successfully.',
+            ]);
+        }
+        else {
+            return redirect()->route('teacher.index')->with('success', 'Teacher deleted successfully.');
+        }
 
-        //return redirect()->route('teacher.index')->with('success', 'Teacher deleted successfully.');
     }
 
 
     public function getBySubject(Request $request)
     {
-        // $subject = $request->get('subject');
-
-        // $teachers = Teacher::where('subject', 'LIKE', '%' . $subject . '%')
-        //     ->with('user')
-        //     ->get();
-
-        // return response()->json($teachers->map(function ($teacher) {
-        //     return [
-        //         'id' => $teacher->id,
-        //         'name' => $teacher->user->name,
-        //     ];
-        // }));
-
         $subject = $request->get('subject');
+
         if(!$subject){
             return response()->json([
                 'status' => false,
@@ -221,36 +249,77 @@ class TeacherController extends Controller
             ], 400);
         }
 
-        $teacher = Teacher::where('subject','LIKE', '%' . $subject . '%')
+        // $teacher = Teacher::where('subject','LIKE', '%' . $subject . '%')
+        //     ->with('user')
+        //     ->get();
+
+        // $data = $teacher->map(function($teacher){
+        //     return [
+        //         'id' => $teacher->id,
+        //         'name' => $teacher->user->name,
+        //         'email' => $teacher->user->email,
+        //         'qualification' => $teacher->qualification,
+        //         'subject' => explode(', ', $teacher->subject),
+        //         'phone' => $teacher->phone,
+        //         'address' => $teacher->address,
+        //         'profile_photo' => $teacher->profile_photo ? asset('storage/' . $teacher->profile_photo) : null,
+        //         'joined_date' => $teacher->joined_date,
+        //     ];
+        // });
+
+        // return response()->json([
+        //     'status' => true,
+        //     'message' => 'Teachers fetched successfully',
+        //     'data' => $data,
+        // ]);
+
+        if (!$subject) {
+            return response()->json([], 400);
+        }
+
+        $teachers = Teacher::where('subject', 'LIKE', '%' . $subject . '%')
             ->with('user')
             ->get();
 
-        $data = $teacher->map(function($teacher){
+        $data = $teachers->map(function ($teacher) {
             return [
                 'id' => $teacher->id,
                 'name' => $teacher->user->name,
-                'email' => $teacher->user->email,
-                'qualification' => $teacher->qualification,
-                'subject' => explode(', ', $teacher->subject),
-                'phone' => $teacher->phone,
-                'address' => $teacher->address,
-                'profile_photo' => $teacher->profile_photo ? asset('storage/' . $teacher->profile_photo) : null,
-                'joined_date' => $teacher->joined_date,
             ];
         });
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Teachers fetched successfully',
-            'data' => $data,
-        ]);
+        return response()->json($data);
+
+
     }
 
-    public function list()
+        public function list(Request $request)
     {
-        $teachers = Teacher::with('user')->get();
+        $user = Auth::user();
+        if (!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
 
-        $data = $teachers->map(function ($teacher) {
+        $search = $request->input('search');
+
+        $query = Teacher::with('user');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->whereHas('user', function($q2) use ($search) {
+                    $q2->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
+                })
+                ->orWhere('subject', 'like', '%' . $search . '%');
+            });
+        }
+
+        $teachers = $query->paginate(10);
+
+        $data = $teachers->getCollection()->map(function ($teacher) {
             return [
                 'id' => $teacher->id,
                 'name' => $teacher->user->name,
@@ -268,9 +337,14 @@ class TeacherController extends Controller
             'status' => true,
             'message' => 'Teacher list fetched successfully.',
             'data' => $data,
+            'total' => $teachers->total(),
+            'per_page' => $teachers->perPage(),
+            'current_page' => $teachers->currentPage(),
+            'last_page' => $teachers->lastPage(),
+            'next_page_url' => $teachers->nextPageUrl(),
+            'prev_page_url' => $teachers->previousPageUrl(),
         ]);
     }
-
 
 }
 

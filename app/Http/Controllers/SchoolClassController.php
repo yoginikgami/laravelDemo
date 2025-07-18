@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SchoolClass;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class SchoolClassController extends Controller
@@ -30,6 +31,13 @@ class SchoolClassController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $validation = Validator::make($request->all(), [
             "name"=> "required|array",
             "section"=> "required|array",
@@ -61,13 +69,14 @@ class SchoolClassController extends Controller
                 'section'=> $section
             ]);
         }
-        return response()->json([
-            'status' => true,
-            'message' => 'Classes added Successfully.',
-            'data' => $class,
-        ]);
-
-       // return redirect()->route('schoolclass.index')->with('success','Classes added Successfully.');
+        if($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Classes added Successfully.',
+                'data' => $class,
+            ]);
+        }
+        return redirect()->route('schoolclass.index')->with('success','Classes added Successfully.');
     }
 
     /**
@@ -75,6 +84,13 @@ class SchoolClassController extends Controller
      */
     public function show(string $id)
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $schoolClass = SchoolClass::findOrFail($id); // will throw 404 if not found
 
         return response()->json([
@@ -103,6 +119,13 @@ class SchoolClassController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $schoolClass = SchoolClass::findOrFail($id);
         $validator = Validator::make($request->all(),[
             'name'=> 'required',
@@ -131,40 +154,48 @@ class SchoolClassController extends Controller
             'name'=> $request->name,
             'section'=> $request->section
         ]);
+        if($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Class Updated Successfully',
+                'data' => $schoolClass,
+            ]);
+        }
 
-        return response()->json([
-            'status'=>true,
-            'message'=> 'Class Updated Successfully',
-            'data' => $schoolClass,
-        ]);
-        //return redirect()->route('schoolclass.index')->with('success','Class Updated Successfully.');
+        return redirect()->route('schoolclass.index')->with('success','Class Updated Successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id,Request $request)
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $schoolClass = SchoolClass::findOrFail($id);
         $schoolClass->delete();
-        
-        // if(!$schoolClass) {
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'Class not found.',
-        //     ], 404);
-        // }
-        // if($id->wantsJson()){
+        if($request->expectsJson()) {
             return response()->json([
                 'status' => true,
                 'message' => 'Class deleted successfully.',
             ]);
-        // }
-
-        // return redirect()->route('schoolclass.index')->with('success', 'Class deleted successfully.');
+        }
+        return redirect()->route('schoolclass.index')->with('success', 'Class deleted successfully.');
     }
 
     public function list(){
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $schoolClass = SchoolClass::get();
         $data = $schoolClass->map(function ($schoolClass) {
             return [

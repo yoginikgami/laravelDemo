@@ -13,7 +13,7 @@ class TeacherSeeder extends Seeder
     public function run(): void
     {
 
-        Teacher::factory()->count(50)->create();
+        Teacher::factory()->count(100)->create();
         // Ensure the "Teacher" role exists
         // $teacherRole = Role::firstOrCreate(['name' => 'Teacher', 'guard_name' => 'web']);
 

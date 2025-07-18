@@ -56,6 +56,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/subjects/{id}', [SubjectController::class, 'show']);
     Route::put('/subjects/{id}', [SubjectController::class, 'update']);
     Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
-    Route::get('/list-', [SubjectController::class,'list']);
+    Route::get('/list-subjects', [SubjectController::class,'list']);
 
 });

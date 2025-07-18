@@ -10,7 +10,7 @@
         data-show-columns="true" data-show-export="true" data-show-print = "true" style="width: 100%">
         <thead class="table-dark">
             <tr>
-                <th data-field="name" data-sortable="true">Subject Name</th>
+                <th data-field="Subname" data-sortable="true">Subject Name</th>
                 <th data-field="class_section" data-sortable="true">Class & Section</th>
                 <th data-field="name" data-sortable="true">Teacher Name</th>
                 <th data-field="qualification" data-sortable="true">Qualification</th>

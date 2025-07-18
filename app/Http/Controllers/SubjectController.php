@@ -6,9 +6,11 @@ use App\Models\User;
 use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\SchoolClass;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 
 class SubjectController extends Controller
 {
@@ -31,24 +33,31 @@ class SubjectController extends Controller
     }
     public function store(Request $request)
     {
-        $validation = Validator::make($request->all(),[
+        $user = Auth::user();
+        if (!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
+
+        $validation = Validator::make($request->all(), [
             'subject' => 'required|string',
             'class_id' => 'required|array',
             'class_id.*' => 'exists:school_classes,id',
             'teacher_id' => 'required|exists:teachers,id',
         ]);
 
+        if ($validation->fails()) {
+            return back()->withErrors($validation)->withInput();
+        }
+
         $subjectName = $request->subject;
         $teacherId = $request->teacher_id;
         $classIds = $request->class_id;
 
-        if($validation->fails()){
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation Error',
-                'errors' => $validation->errors(),
-            ], 422);
-        }
+        $inserted = [];
+        $duplicates = [];
 
         foreach ($classIds as $classId) {
             $exists = Subject::where('name', $subjectName)
@@ -56,35 +65,47 @@ class SubjectController extends Controller
                 ->exists();
 
             if ($exists) {
-                // Optional: continue instead of returning error for one class
-                return back()->withErrors([
-                    'duplicate' => "Subject '$subjectName' is already assigned to class ID $classId."
-                ])->withInput();
+                $duplicates[] = $classId;
+                continue;
             }
 
-            $student = Subject::create([
+            $subject = Subject::create([
                 'name' => $subjectName,
                 'class_id' => $classId,
                 'teacher_id' => $teacherId,
             ]);
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Subject assigned successfully.',
-                'data' => $student,
-            ]);
+            $inserted[] = $subject;
         }
 
-        //return redirect()->route('subject.index')->with('success', 'Subject assigned to selected classes.');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Subjects assigned successfully.',
+                'inserted' => $inserted,
+                'skipped_duplicates' => $duplicates,
+            ]);
+        } else {
+            $message = 'Subjects assigned successfully.';
+            if (!empty($duplicates)) {
+                $message .= ' Some subjects were skipped due to duplication: ' . implode(', ', $duplicates);
+            }
+            return redirect()->route('subject.index')->with('success', $message);
+        }
     }
 
 
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
+
+        $user = Auth::user();
+         if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
+
         $subjects = Subject::with(['schoolClass', 'teacher'])->findOrFail($id);
         if(!$subjects){
             return response()->json([
@@ -92,22 +113,24 @@ class SubjectController extends Controller
                 'message' => 'Subject not found.',
             ], 404);
         }
+        if($request->expectsJson()){
+                return response()->json([
+                'status' => true,
+                'message' => 'Subject fetched successfully.',
+                'data' => [
+                    'id' => $subjects->id,
+                    'name' => $subjects->name,
+                    'school_class' => $subjects->schoolClass ? [
+                        'name' => $subjects->schoolClass->name,
+                        'section' => $subjects->schoolClass->section,
+                    ] : null,
+                    'teacher' => $subjects->teacher ? [
+                        'name' => $subjects->teacher->user->name,
+                    ] : null,
+                ]
+            ]);
+        }
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Subject fetched successfully.',
-            'data' => [
-                'id' => $subjects->id,
-                'name' => $subjects->name,
-                'school_class' => $subjects->schoolClass ? [
-                    'name' => $subjects->schoolClass->name,
-                    'section' => $subjects->schoolClass->section,
-                ] : null,
-                'teacher' => $subjects->teacher ? [
-                    'name' => $subjects->teacher->user->name,
-                ] : null,
-            ]
-        ]);
     }
 
     /**
@@ -129,6 +152,13 @@ class SubjectController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $subject = Subject::findOrFail($id);
         $validator = Validator::make($request->all(), [
             'class_id' => 'required',
@@ -165,27 +195,47 @@ class SubjectController extends Controller
             'class_id' => $request->class_id,
             'teacher_id' => $request->teacher_id
         ]);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Subject updated successfully.',
-            'data' => $subject,
-        ]);
-
-        //return redirect()->route('subject.index')->with('success', 'Subject updated successfully.');
+        if($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Subject updated successfully.',
+                'data' => $subject,
+            ]);
+        }
+        return redirect()->route('subject.index')->with('success', 'Subject updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id,Request $request)
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ],403);
+        }
         $subject = Subject::findOrFail($id);
         $subject->delete();
+        if($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Subject deleted successfully.',
+            ]);
+        }
         return redirect()->route('subject.index')->with('success', 'Subject deleted successfully.');
     }
 
     public function list(){
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $subject = Subject::with(['schoolClass', 'teacher'])->get();
 
         $data = $subject->map(function($subject){
@@ -198,7 +248,7 @@ class SubjectController extends Controller
                     'section' => $subject->schoolClass->section ?? null,
                 ],
                 'teacher' => [
-                    'id' => $subject->teacher->id ?? null, 
+                    'id' => $subject->teacher->id ?? null,
                     'name' => $subject->teacher->user->name ?? null,
                 ],
             ];

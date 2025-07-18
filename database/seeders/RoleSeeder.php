@@ -39,6 +39,11 @@ class RoleSeeder extends Seeder
             'guard_name'=> 'web'
         ]);
 
+        $deleteStudent = Permission::firstOrCreate([
+            'name'=> 'delete student',
+            'guard_name'=> 'web'
+        ]);
+
         // Create roles
         $adminRole = Role::firstOrCreate([
             'name' => 'Admin',

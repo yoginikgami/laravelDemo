@@ -77,19 +77,20 @@ class TeacherDashboardController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $teacher = Teacher::with('user')->findOrFail($id);
-        $user = $teacher->user;
+       $user = Auth::user();
 
-        $request->validate([
-            "address" => "required",
-            "contact_no" => "required|unique:teachers,phone|max:10|min:10",
+        $teacher = Teacher::where('user_id', $user->id)->findOrFail($id);
+
+        $validated = $request->validate([
+            'address' => 'required|string|max:255',
+            'contact_no' => 'required|digits:10|unique:teachers,phone,' . $teacher->id,
         ]);
-
 
         $teacher->update([
-            'address' => $request->address,
-            'contact_no' => $request->contact_no,
+            'address' => $validated['address'],
+            'phone' => $validated['contact_no'],
         ]);
-        return redirect()->route('admin.teacherDashboard')->with('success', 'teacher Data Updated Successfully');
+
+        return redirect()->back()->with('success', 'Profile information updated successfully.');
     }
 }

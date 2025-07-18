@@ -40,13 +40,24 @@
         <!-- Teacher - Class - Subject -->
         <div class="row">
             <div class="col-lg-7 card m-3">
+
                 <h3 class="mt-3 fw-bold text-center">Teacher - Class - Subject</h3>
-                <table class="table table-striped mt-2">
+
+                <table
+                    id="teacherTable"
+                    class="table table-striped mt-2"
+                    data-toggle="table"
+                    data-search="true"
+                    data-pagination="true"
+                    data-page-size="10"
+                    data-page-list="[10, 25, 50, All]"
+
+                >
                     <thead class="table-light">
                         <tr>
-                            <th>Teacher</th>
-                            <th>Class</th>
-                            <th>Subject</th>
+                            <th data-field="teacher" data-sortable="true">Teacher</th>
+                            <th data-field="class" data-sortable="true">Class</th>
+                            <th data-field="subject" data-sortable="true">Subject</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,8 +65,7 @@
                             @forelse ($teacher->subjects as $subject)
                                 <tr>
                                     <td>{{ $teacher->user->name }}</td>
-                                    <td>{{ $subject->schoolClass->name ?? 'N/A' }} -
-                                        {{ $subject->schoolClass->section ?? 'N/A' }}</td>
+                                    <td>{{ $subject->schoolClass->name ?? 'N/A' }} - {{ $subject->schoolClass->section ?? 'N/A' }}</td>
                                     <td>{{ $subject->name }}</td>
                                 </tr>
                             @empty
@@ -72,6 +82,8 @@
                     </tbody>
                 </table>
             </div>
+
+
 
             <!-- Student Count per Class -->
             <div class="col-lg-4 card m-3">

@@ -70,23 +70,21 @@ class StudentDashboardController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $student = Student::with('user')->findOrFail($id);
-        $user = $student->user;
+       $user = Auth::user();
 
-        $request->validate([
-            "address" => "required",
-            "contact_no" => "required|unique:teachers,phone|max:10|min:10",
+        $teacher = Student::where('user_id', $user->id)->findOrFail($id);
+
+        $validated = $request->validate([
+            'address' => 'required|string|max:255',
+            'contact_no' => 'required|digits:10|unique:teachers,phone,' . $teacher->id,
         ]);
 
-
-        $student->update([
-            'address' => $request->address,
-            'contact_no' => $request->contact_no,
+        $teacher->update([
+            'address' => $validated['address'],
+            'phone' => $validated['contact_no'],
         ]);
-        return redirect()->route('admin.studentDashboard')->with('success', 'Student Data Updated Successfully');
+
+        return redirect()->back()->with('success', 'Profile information updated successfully.');
     }
 
-    // public function profile(){
-    //     return view('./admin/student/profile');
-    // }
 }

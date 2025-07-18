@@ -25,7 +25,7 @@
                 <th data-field="address" data-sortable="true">Address</th>
                 <th data-field="phone_no" data-sortable="true">Phone No</th>
                 <th>View</th>
-                @role('Admin')<th>Delete</th>@endrole
+                @can('delete student')<th>Delete</th>@endcan
             </tr>
         </thead>
 
@@ -49,17 +49,17 @@
 
                     <td><a href="{{ route('student.edit', $student->id) }}" class="btn btn-success fw-bold">Edit</a>
                     </td>
-                    @role('Admin')
-                        <td>
+                    @can('delete student')
+                    <td>
+                        <form action="{{ route('student.destroy', $student->id) }}" method="POST"
+                            onsubmit="return confirm('Are you sure you want to delete this student?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger fw-bold">Delete</button>
+                        </form>
 
-                            <form action="{{ route('student.destroy', $student->id) }}" method="POST"
-                                onsubmit="return confirm('Are you sure you want to delete this student?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger fw-bold">Delete</button>
-                            </form>
                         </td>
-                        @endrole
+                    @endcan
 
                 </tr>
             @endforeach

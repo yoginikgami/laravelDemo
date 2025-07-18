@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Student;
 use App\Models\SchoolClass;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -45,6 +46,13 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole(['Admin','Teacher'])) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $validation = Validator::make($request->all(), [
             "fname"=> "required",
             "email"=> "required|email|unique:users,email",
@@ -91,18 +99,28 @@ class StudentController extends Controller
             'address' => $request['address'],
             'contact_no'=> $request['contact_no'],
         ]);
-        return response()->json([
-            'status'=> true,
-            'message'=> 'Student Create Successfully.',
-            'data' => $student->load('user'),
-        ]);
-        //return redirect()->route('student.index')->with('success', 'Student added successfully!');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Student created successfully.',
+                'data' => $student->load('user'),
+            ]);
+        } else {
+            return redirect()->route('student.index')->with('success', 'Student created successfully!');
+        }
     }
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole(['Admin', 'Teacher'])) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $student = Student::with(['user', 'schoolClass'])->find($id);
 
         if(!$student){
@@ -111,27 +129,28 @@ class StudentController extends Controller
                 'message' => 'Student not found.',
             ], 404);
         }
-
-        return response()->json([
-            'status'=> true,
-            'message'=> 'Student fetched successfully.',
-            'data' => [
-                'id' => $student->id,
-                'name' => $student->user->name,
-                'email' => $student->user->email,
-                'class' => [
-                    'id' => $student->schoolClass->id ?? null,
-                    'name' => $student->schoolClass->name ?? null,
-                    'section' => $student->schoolClass->section ?? null,
-                ],
-                'roll_no' => $student->roll_no,
-                'gender' => $student->gender,
-                'dob' => $student->dob,
-                'contact_no' => $student->contact_no,
-                'address' => $student->address,
-                'photo' => $student->photo ? asset('storage/' . $student->photo) : null,
-            ]
-        ]);
+        if($request->expectsJson()) {
+            return response()->json([
+                'status'=> true,
+                'message'=> 'Student fetched successfully.',
+                'data' => [
+                    'id' => $student->id,
+                    'name' => $student->user->name,
+                    'email' => $student->user->email,
+                    'class' => [
+                        'id' => $student->schoolClass->id ?? null,
+                        'name' => $student->schoolClass->name ?? null,
+                        'section' => $student->schoolClass->section ?? null,
+                    ],
+                    'roll_no' => $student->roll_no,
+                    'gender' => $student->gender,
+                    'dob' => $student->dob,
+                    'contact_no' => $student->contact_no,
+                    'address' => $student->address,
+                    'photo' => $student->photo ? asset('storage/' . $student->photo) : null,
+                ]
+            ]);}
+        
     }
 
     /**
@@ -139,6 +158,7 @@ class StudentController extends Controller
      */
     public function edit(string $id)
     {
+
         $student = Student::findOrFail($id);
         $class = SchoolClass::all();
         return view('./admin/student/editStudent', compact('student','class'));
@@ -150,6 +170,20 @@ class StudentController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole(['Admin', 'Teacher'])) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
+        $user = Auth::user();
+        if(!$user || !$user->hasRole('Admin')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $student = Student::with('user')->findOrFail($id);
         $user = $student->user;
 
@@ -198,40 +232,59 @@ class StudentController extends Controller
             'address' => $request->address,
             'contact_no'=> $request->contact_no,
         ]);
-
-        return response()->json([
-            'status'=> true,
-            'message'=> 'Student Updated Successfully',
-            'data' => $student->load('user'),
-        ]);
-        //return redirect()->route('student.index')->with('success', 'Student Updated Successfully');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Student Updated Successfully',
+                'data' => $student->load('user'),
+            ]);
+        }
+        else{
+            return redirect()->route('student.index')->with('success', 'Student Updated Successfully');
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(String $id, Request $request)
     {
+        $user = Auth::user();
+
+        if (!$user || !$user->hasPermissionTo('delete student')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
+
         $student = Student::findOrFail($id);
 
         if ($student->photo && Storage::disk('public')->exists($student->photo)) {
             Storage::disk('public')->delete($student->photo);
         }
 
-        $student->user()->delete();
-
         $student->delete();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Student deleted successfully.',
-        ]);
-
-        //return redirect()->route('student.index')->with('success', 'Student deleted successfully.');
-
+        // Check if it was an AJAX or web request
+        if ($request->isJson() || $request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Student deleted successfully.',
+            ]);
+        }
+        return redirect()->route('student.index')->with('success', 'Student deleted successfully!');
     }
+
     public function list()
     {
+        $user = Auth::user();
+        if(!$user || !$user->hasRole(['Admin', 'Teacher'])) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized access.',
+            ], 403);
+        }
         $student = Student::with('user')->get();
 
         $data = $student->map(function ($student) {
@@ -252,12 +305,10 @@ class StudentController extends Controller
                 'photo' => $student->photo ? asset('storage/' . $student->photo) : null,
             ];
         });
-
         return response()->json([
             'status' => true,
             'message' => 'Student list fetched successfully.',
             'data' => $data,
         ]);
     }
-
 }

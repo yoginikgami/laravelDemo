@@ -38,8 +38,6 @@ class AuthenticatedSessionController extends Controller
         } elseif ($user->hasRole('Admin')) {
             return redirect()->route('admin.admindashboard');
         }
-
-
         // Default fallback
         return redirect()->route('dashboard');
     }
@@ -86,6 +84,7 @@ class AuthenticatedSessionController extends Controller
 
             ], 200);
         }
+        
         else{
             return response()->json([
                 'status' => false,

@@ -49,5 +49,10 @@ class AdminUserSeeder extends Seeder
         );
 
         $admin->assignRole('Admin');
+        // $permissions = Permission::all();
+        // foreach ($permissions as $permission) {
+        //     $admin->givePermissionTo($permission);
+        // }
+
     }
 }

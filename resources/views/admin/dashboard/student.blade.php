@@ -44,7 +44,7 @@
                         value="{{ $student->schoolclass->name }} - {{ $student->schoolclass->section }}" disabled />
                 </div>
 
-                <form method="POST" action=" ">
+                <form method="POST" action=" {{ route('student.dashboard.update', $student->id) }}">
                     @csrf
                     @method('PUT')
                     <div class="mb-3 mt-3">
